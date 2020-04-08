@@ -20,8 +20,9 @@
 </template>
 
 <script>
-import TransactionView from "../components/TransactionView.vue"
-import moment from "moment"
+import TransactionView from "../components/TransactionView.vue";
+import axios from 'axios';
+import moment from "moment";
 export default {
   name: 'Transactions',
   components: {
@@ -29,6 +30,7 @@ export default {
   },
   data() {
     return {
+      transactions: [],
       date: moment().format("YYYY-MM-DD"),
       description: "",
       category: "",
@@ -37,35 +39,34 @@ export default {
       maxDate: moment().format("YYYY-MM-DD")
     }
   },
-  computed: {
-    transactions() {
-      return [];
-    }
+  created() {
+    this.getTransactions();
   },
   methods: {
-    addTransaction() {
+    async addTransaction() {
       if (this.amount === "")
         return;
 
       if (isNaN(this.amount))
         return;
 
-      let moneyAmount = "$" + Number(this.amount).toFixed(2).toString();
-      let date = moment().format("YYYY-MM-DD");
-      let lastTransactionIndex = this.$root.$data.transactions.length - 1;
-      let lastTransactionID = this.$root.$data.transactions[lastTransactionIndex].id;
-
-      this.$root.$data.transactions.push({
-        id: lastTransactionID + 1,
-        date: date,
+      await axios.post("/api/transaction", {
+        date: this.date,
         description: this.description,
         category: this.category,
-        amount: moneyAmount
+        amount: Number(this.amount).toFixed(2)
       });
 
       this.description = "";
       this.category = "";
       this.amount = "";
+
+      this.getTransactions();
+    },
+    async getTransactions() {
+      let response = await axios.get("/api/transaction");
+      this.transactions = response.data;
+      return true;
     }
   }
 }

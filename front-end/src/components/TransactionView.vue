@@ -11,7 +11,7 @@
     </thead>
     <tbody>
       <tr v-for="transaction in sortedTransactions" :key="transaction.id">
-        <td>{{transaction.date}}</td>
+        <td>{{getFormatted(transaction.date)}}</td>
         <td>{{transaction.description}}</td>
         <td>{{transaction.category}}</td>
         <td class="align-right">{{transaction.amount}}</td>
@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import moment from "moment";
 export default {
   name: 'TransactionView',
   props: {
@@ -40,6 +41,9 @@ export default {
       let transactionIndex = this.$root.$data.transactions.findIndex(
         _transaction => _transaction.id === transaction.id);
       this.$root.$data.transactions.splice(transactionIndex, 1);
+    },
+    getFormatted(date) {
+      return moment(date.slice(0,10), "YYYY-MM-DD").format("MMMM DD YYYY");
     }
   }
 }

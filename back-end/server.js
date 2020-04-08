@@ -25,11 +25,39 @@ const Budget = mongoose.model('Budget', budgetSchema);
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const moment = require('moment');
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
+
+app.post('/api/transaction', async (req, res) => {
+  const transaction = new Transaction({
+    date: req.body.date,
+    created: moment().format(),
+    description: req.body.description,
+    category: req.body.category,
+    amount: req.body.amount
+  });
+  try {
+    await transaction.save();
+    res.send(transaction);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
+
+app.get('/api/transaction', async (req, res) => {
+  try {
+    let transactions = await Transaction.find();
+    res.send(transactions);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
 
 app.listen(3000, () => console.log('Server listening on port 3000'));
