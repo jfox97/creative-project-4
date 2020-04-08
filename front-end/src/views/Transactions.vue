@@ -1,10 +1,13 @@
 <template>
   <div id="wrapper">
-    <h1>Add Transactions</h1>
+    <h1>Transactions</h1>
     <form v-on:submit.prevent="addTransaction">
-      <input type="text" placeholder="Description" v-model="description" />
-      <input type="text" placeholder="Category" v-model="category" />
-      <input type="text" placeholder="Amount" v-model="amount" />
+      <div id="input">
+        <input type="date" v-model="date" />
+        <input type="text" placeholder="Description" v-model="description" />
+        <input type="text" placeholder="Category" v-model="category" />
+        <input type="text" class="small" placeholder="Amount" v-model="amount" />
+      </div>
       <button type="submit">Add</button>
     </form>
     <div id="date-filter">
@@ -26,11 +29,12 @@ export default {
   },
   data() {
     return {
+      date: moment().format("YYYY-MM-DD"),
       description: "",
       category: "",
       amount: "",
-      minDate: "2020-02-01",
-      maxDate: "2020-12-31"
+      minDate: moment().startOf('month').format("YYY-MM-DD"),
+      maxDate: moment().format("YYYY-MM-DD")
     }
   },
   computed: {
@@ -78,19 +82,33 @@ export default {
   }
 
   form {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+    text-align: left;
     margin: 40px 0px;
   }
 
-  form input {
+  #input {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  #input input {
     padding: 5px 10px;
     width: 300px;
     border: 1px solid #ddd;
     border-radius: 3px;
     font-size: 18px;
     color: 484e61;
+  }
+
+  .small {
+    width: 200px !important;
+  }
+
+  #input input[type="date"] {
+    width: 200px !important;
+    font-size: 14px;
+    text-align: center;
   }
 
   form button {
@@ -101,6 +119,7 @@ export default {
     border: 0px;
     border-radius: 5px;
     padding: 8px 45px;
+    margin: 20px 15px;
   }
 
   form button:hover {
