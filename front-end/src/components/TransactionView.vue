@@ -10,13 +10,14 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="transaction in sortedTransactions" :key="transaction.id">
+      <tr v-for="transaction in sortedTransactions" :key="transaction._id">
         <td>{{getFormatted(transaction.date)}}</td>
         <td>{{transaction.description}}</td>
         <td>{{transaction.category}}</td>
         <td class="align-right">{{transaction.amount}}</td>
         <td class="align-center">
           <button @click="remove(transaction)">Remove</button>
+          <button @click="edit(transaction)">Edit</button>
         </td>
       </tr>
     </tbody>
@@ -37,10 +38,11 @@ export default {
     }
   },
   methods: {
-    remove(transaction) {
-      let transactionIndex = this.$root.$data.transactions.findIndex(
-        _transaction => _transaction.id === transaction.id);
-      this.$root.$data.transactions.splice(transactionIndex, 1);
+    async remove(transaction) {
+      this.$emit('deleteClicked', transaction);
+    },
+    edit(transaction) {
+      this.$emit('editClicked', transaction);
     },
     getFormatted(date) {
       return moment(date.slice(0,10), "YYYY-MM-DD").format("MMMM DD YYYY");
@@ -76,6 +78,7 @@ tbody tr:nth-child(even) {
 
 .align-center {
   text-align: center;
+  max-width: 80px;
 }
 
 button {
@@ -84,6 +87,7 @@ button {
 	text-decoration: none;
   font-size: 16px;
 	border: 0px;
+  padding: 0px 20px;
 }
 
 button:hover {

@@ -8,14 +8,16 @@
         <input type="text" placeholder="Category" v-model="category" />
         <input type="text" class="small" placeholder="Amount" v-model="amount" />
       </div>
-      <button type="submit">Add</button>
+      <button v-if="!editMode" type="submit">Add</button>
+      <button v-if="editMode" type="button" @click="editSubmit">Edit</button>
+      <button v-if="editMode" class="cancel" type="button" @click="editCancel">Cancel</button>
     </form>
     <div id="date-filter">
       <label>Filter transactions:</label>
       <input type="date" v-model="minDate" /> &mdash;
       <input type="date" v-model="maxDate" />
     </div>
-    <TransactionView :transactions="transactions" />
+    <TransactionView :transactions="transactions" @editClicked="edit" @deleteClicked="remove"/>
   </div>
 </template>
 
@@ -36,7 +38,9 @@ export default {
       category: "",
       amount: "",
       minDate: moment().startOf('month').format("YYY-MM-DD"),
-      maxDate: moment().format("YYYY-MM-DD")
+      maxDate: moment().format("YYYY-MM-DD"),
+      editMode: false,
+      editTransactionID: ""
     }
   },
   created() {
@@ -57,6 +61,7 @@ export default {
         amount: Number(this.amount).toFixed(2)
       });
 
+      this.date = moment().format("YYYY-MM-DD");
       this.description = "";
       this.category = "";
       this.amount = "";
@@ -67,6 +72,43 @@ export default {
       let response = await axios.get("/api/transaction");
       this.transactions = response.data;
       return true;
+    },
+    async remove(transaction) {
+      await axios.delete("/api/transaction/" + transaction._id);
+      this.getTransactions();
+    },
+    edit(transaction) {
+      this.date = transaction.date.slice(0,10);
+      this.description = transaction.description;
+      this.category = transaction.category;
+      this.amount = transaction.amount;
+      this.editTransactionID = transaction._id;
+      this.editMode = true;
+    },
+    async editSubmit() {
+      await axios.put("/api/transaction/" + this.editTransactionID, {
+        date: this.date,
+        description: this.description,
+        category: this.category,
+        amount: Number(this.amount).toFixed(2)
+      });
+
+      this.date = moment().format("YYYY-MM-DD");
+      this.description = "";
+      this.category = "";
+      this.amount = "";
+      this.editTransactionID = "";
+      this.editMode = false;
+
+      this.getTransactions();
+    },
+    editCancel() {
+      this.date = moment().format("YYYY-MM-DD");
+      this.description = "";
+      this.category = "";
+      this.amount = "";
+      this.editTransactionID = "";
+      this.editMode = false;
     }
   }
 }
@@ -121,6 +163,10 @@ export default {
     border-radius: 5px;
     padding: 8px 45px;
     margin: 20px 15px;
+  }
+
+  form button.cancel {
+    padding: 8px 35px;
   }
 
   form button:hover {

@@ -60,4 +60,33 @@ app.get('/api/transaction', async (req, res) => {
   }
 });
 
+app.delete('/api/transaction/:id', async (req, res) => {
+  try {
+    await Transaction.deleteOne({
+      _id: req.params.id
+    });
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
+
+app.put('/api/transaction/:id', async (req, res) => {
+  try {
+    let transaction = await Transaction.findOne({
+      _id: req.params.id
+    });
+    transaction.date = req.body.date;
+    transaction.description = req.body.description;
+    transaction.category = req.body.category;
+    transaction.amount = req.body.amount;
+    await transaction.save();
+    res.send(transaction);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+})
+
 app.listen(3000, () => console.log('Server listening on port 3000'));
