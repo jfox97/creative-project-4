@@ -17,7 +17,7 @@
       <input type="date" v-model="minDate" /> &mdash;
       <input type="date" v-model="maxDate" />
     </div>
-    <TransactionView :transactions="transactions" @editClicked="edit" @deleteClicked="remove"/>
+    <TransactionView :transactions="filteredTransactions" @editClicked="edit" @deleteClicked="remove"/>
   </div>
 </template>
 
@@ -37,7 +37,7 @@ export default {
       description: "",
       category: "",
       amount: "",
-      minDate: moment().startOf('month').format("YYY-MM-DD"),
+      minDate: moment().startOf('month').format("YYYY-MM-DD"),
       maxDate: moment().format("YYYY-MM-DD"),
       editMode: false,
       editTransactionID: ""
@@ -46,14 +46,27 @@ export default {
   created() {
     this.getTransactions();
   },
+  computed: {
+    filteredTransactions() {
+      let minDate = this.minDate
+      let maxDate = this.maxDate
+      return this.transactions.filter(function(transaction) {
+        let transactionDate = transaction.date.slice(0, 10);
+        if (transactionDate >= minDate && transactionDate <= maxDate)
+          return transaction;
+      });
+    }
+  },
   methods: {
     reset() {
       this.date = moment().format("YYYY-MM-DD");
       this.description = "";
       this.category = "";
       this.amount = "";
-      this.editTransactionID = "";
+      this.minDate = moment().startOf('month').format("YYYY-MM-DD"),
+      this.maxDate = moment().format("YYYY-MM-DD"),
       this.editMode = false;
+      this.editTransactionID = "";
     },
     refresh() {
       this.reset();

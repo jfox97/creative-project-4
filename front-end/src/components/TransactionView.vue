@@ -14,7 +14,7 @@
         <td>{{getFormatted(transaction.date)}}</td>
         <td>{{transaction.description}}</td>
         <td>{{transaction.category}}</td>
-        <td class="align-right">{{transaction.amount}}</td>
+        <td class="align-right">${{transaction.amount.toFixed(2)}}</td>
         <td class="align-center">
           <button @click="remove(transaction)">Remove</button>
           <button @click="edit(transaction)">Edit</button>
@@ -78,7 +78,7 @@ tbody tr:nth-child(even) {
 
 .align-center {
   text-align: center;
-  max-width: 80px;
+  max-width: 60px;
 }
 
 button {
