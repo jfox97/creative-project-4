@@ -47,6 +47,23 @@ export default {
     this.getTransactions();
   },
   methods: {
+    reset() {
+      this.date = moment().format("YYYY-MM-DD");
+      this.description = "";
+      this.category = "";
+      this.amount = "";
+      this.editTransactionID = "";
+      this.editMode = false;
+    },
+    refresh() {
+      this.reset();
+      this.getTransactions();
+    },
+    async getTransactions() {
+      let response = await axios.get("/api/transaction");
+      this.transactions = response.data;
+      return true;
+    },
     async addTransaction() {
       if (this.amount === "")
         return;
@@ -61,17 +78,7 @@ export default {
         amount: Number(this.amount).toFixed(2)
       });
 
-      this.date = moment().format("YYYY-MM-DD");
-      this.description = "";
-      this.category = "";
-      this.amount = "";
-
-      this.getTransactions();
-    },
-    async getTransactions() {
-      let response = await axios.get("/api/transaction");
-      this.transactions = response.data;
-      return true;
+      this.refresh();
     },
     async remove(transaction) {
       await axios.delete("/api/transaction/" + transaction._id);
@@ -93,22 +100,10 @@ export default {
         amount: Number(this.amount).toFixed(2)
       });
 
-      this.date = moment().format("YYYY-MM-DD");
-      this.description = "";
-      this.category = "";
-      this.amount = "";
-      this.editTransactionID = "";
-      this.editMode = false;
-
-      this.getTransactions();
+      this.refresh();
     },
     editCancel() {
-      this.date = moment().format("YYYY-MM-DD");
-      this.description = "";
-      this.category = "";
-      this.amount = "";
-      this.editTransactionID = "";
-      this.editMode = false;
+      this.reset();
     }
   }
 }
