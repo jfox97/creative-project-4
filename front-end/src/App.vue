@@ -13,8 +13,8 @@
     </div>
     <router-view/>
     <footer>
-      <a target="_blank" href="https://github.com/jfox97/saffron-console">
-        Lab 3b github
+      <a target="_blank" href="https://github.com/jfox97/creative-project-4">
+        Creative Project 4 Github
       </a>
     </footer>
   </div>
